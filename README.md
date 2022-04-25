@@ -16,4 +16,5 @@ Can either write to today's journal entry, or a specified file by providing a ta
 	
 	- target file (relative to neorg workspace) (OPTIONAL):
 		- if empty the target will be "/journal/<Y>/<m>/<d>.norg"
-		- if value provided, the GTD will be written there. if the file doesn't exist, it will be created.
+		- if value provided, the GTD will be written there.
+			If the file doesn't exist, it will be created.
