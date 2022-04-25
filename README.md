@@ -1,14 +1,14 @@
-Capture Neorg GTD
+# Capture Neorg GTD
 
 This is a workflow for capturing a GTD into neorg without opening Nvim for those fleeting "yeah i'd better get around to that" moments.
 
-USAGE:
+## Usage:
 
 	gtd <task_name> -> waiting_for -> contexts
 
 If you press enter on either the waiting_for, or contexts inputs without typing anything in, those sections will not be included in the GTD.
 
-CONFIGURATION:
+## Configuration:
 
 Can either write to today's journal entry, or a specified file by providing a target_file variable (click the [x] in the workflow view)
 
