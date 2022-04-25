@@ -1,3 +1,5 @@
+Capture Neorg GTD
+
 This is a workflow for capturing a GTD into neorg without opening Nvim for those fleeting "yeah i'd better get around to that" moments.
 
 USAGE:
