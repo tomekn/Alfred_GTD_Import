@@ -9,7 +9,7 @@ USAGE:
 
 CONFIGURATION:
 
-	Can either write to today's journal entry, or a specified file by providing a target_file variable (click the [x] in the workflow view)
+Can either write to today's journal entry, or a specified file by providing a target_file variable (click the [x] in the workflow view)
 
 	- neorg_workspace (absolute path) (REQUIRED): path to your neorg workspace
 	- target file (relative to neorg workspace) (OPTIONAL):
