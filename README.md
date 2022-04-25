@@ -6,7 +6,8 @@ This is a workflow for capturing a GTD into neorg without opening Nvim for those
 
 	gtd <task_name> -> waiting_for -> contexts
 
-If you press enter on either the waiting_for, or contexts inputs without typing anything in, those sections will not be included in the GTD.
+The `waiting_for` and `contexts` inputs are optional.
+If you press enter without typing anything in, those sections will not be included in the GTD.
 
 ## Configuration:
 
