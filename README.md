@@ -6,6 +6,7 @@ USAGE:
 
 	gtd <task_name> -> waiting_for -> contexts
 
+If you press enter on either the waiting_for, or contexts inputs without typing anything in, those sections will not be included in the GTD.
 
 CONFIGURATION:
 
