@@ -3,7 +3,8 @@
     "class",
     "love",
     "vector",
-    "tiny"
+    "tiny",
+    "beholder"
   ],
   "Lua.runtime.version": "LuaJIT",
   "Lua.workspace.library": [

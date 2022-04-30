@@ -61,5 +61,3 @@ Player = Class {
     if (direction == 'down') then self.acceleration.y = self.acceleration.y + movement_speed end
   end,
 }
-
-return Player

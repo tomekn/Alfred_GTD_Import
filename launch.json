@@ -1,0 +1,11 @@
+[
+  {
+      "type": "lua-local",
+      "request": "launch",
+      "name": "Debug Love",
+      "program": {
+          "command": "C:\\Program Files\\LOVE\\love.exe"
+      },
+      "args": [ "${workspaceFolder} "]
+  }
+]

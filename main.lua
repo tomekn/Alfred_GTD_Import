@@ -1,21 +1,45 @@
-class = require("libs.class")
--- vector = require('libs.vector')
-tiny = require('libs.tiny')
+if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+    require("lldebugger").start()
+end
+
+_G.Class = require("libs.class")
+_G.tiny = require('libs.tiny')
+_G.beholder = require('libs.beholder')
+_G.sti = require('libs.sti')
+_G.gamestate = require('libs.gamestate')
+
+_G.utils = require('utils')
+
+require('entities.player')
 
 function love.load()
-    local player = require('entities.player')({x=200, y=200}, {x=40, y=0})
-    print(player.to_s())
-    
+    local player = Player({
+        debug = true,
+        position = {x=64, y=64},
+        velocity = {x=0, y=0},
+        size = {width=32, height=32},
+    })
+
     _G.world = tiny.world(
-        player,
-        require('systems.movement_system')
+        require('systems.movement'),
+        require('systems.acceleration'),
+        require('systems.keyboard'),
+        require('systems.debug_entity_draw')
     )
+
+    player:register_events()
+    world:add(player)
 end
 
 function love.update(dt)
-    _G.world:update(dt)
+    if world then
+        world:update(dt, tiny.rejectAll('draw'))
+    end
 end
 
 function love.draw()
-    love.graphics.print('Hello World!', 400, 300)
+    local dt = love.timer.getDelta()
+    if world then
+        world:update(dt, tiny.requireAll('draw'))
+    end
 end
