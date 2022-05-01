@@ -10,9 +10,11 @@ _G.gamestate = require('libs.gamestate')
 _G.vector = require('libs.vector')
 
 _G.utils = require('utils')
-local keymap = require('keymap')
 
+require('keymap')
 require('entities.player')
+local keymap = KeyMap()
+local key_commands = {}
 
 function love.load()
     local player = Player({
@@ -21,6 +23,10 @@ function love.load()
         velocity = vector(0,0),
         size = vector(32, 32),
     })
+    player.register_movement_events(player)
+
+    keymap:set_player(player)
+    key_commands = keymap:commands()
 
     _G.world = tiny.world(
         require('systems.movement'),
@@ -28,7 +34,6 @@ function love.load()
         require('systems.debug_entity_draw')
     )
 
-    player:register_events()
     world:add(player)
 end
 
@@ -46,19 +51,19 @@ function love.draw()
 end
 
 function love.keypressed(key, scan_code, is_repeat)
-    if (keymap[key] ~= nil) then
-        if keymap[key]['pressed'] ~= nil then
-            keymap[key]['pressed']()
+    if (key_commands[key] ~= nil) then
+        if key_commands[key]['pressed'] ~= nil then
+            key_commands[key]['pressed']()
         else
-            keymap[key]()
+            key_commands[key]()
         end
     end
 end
 
 function love.keyreleased(key, scan_code, is_repeat)
-    if keymap[key] then
-        if keymap[key]['released'] then
-            keymap[key]['released']()
+    if key_commands[key] then
+        if key_commands[key]['released'] then
+            key_commands[key]['released']()
         end
     end
 end
