@@ -20,5 +20,5 @@ function Player:init(args)
 
   self:process_args(args)
   self.movable.target = self
-  self.movable:register_movable_events(self)
+  self.movable:register_movable_events()
 end

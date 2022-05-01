@@ -25,7 +25,6 @@ function love.load()
     })
 
     keymap:set_player(player)
-    key_commands = keymap:commands()
 
     _G.world = tiny.world(
         require('systems.movement'),
@@ -50,19 +49,9 @@ function love.draw()
 end
 
 function love.keypressed(key, scan_code, is_repeat)
-    if (key_commands[key] ~= nil) then
-        if key_commands[key]['pressed'] ~= nil then
-            key_commands[key]['pressed']()
-        else
-            key_commands[key]()
-        end
-    end
+    keymap:process_key(key, 'key_pressed')
 end
 
 function love.keyreleased(key, scan_code, is_repeat)
-    if key_commands[key] then
-        if key_commands[key]['released'] then
-            key_commands[key]['released']()
-        end
-    end
+    keymap:process_key(key, 'key_released')
 end

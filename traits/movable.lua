@@ -29,16 +29,13 @@ return {
     end,
     register_movable_events = function(self)
       beholder.group(self.target, function()
-        -- movement start
-        beholder.observe('movable_move_left_start', self.target, function() self.target.movable.start_move(self.target, 'left') end)
-        beholder.observe('movable_move_right_start', self.target, function() self.target.movable.start_move(self.target, 'right') end)
-        beholder.observe('movable_move_up_start', self.target, function() self.target.movable.start_move(self.target, 'up') end)
-        beholder.observe('movable_move_down_start', self.target, function() self.target.movable.start_move(self.target, 'down') end)
-        -- movement end
-        beholder.observe('movable_move_left_end', self.target, function() self.target.movable.end_move(self.target, 'left') end)
-        beholder.observe('movable_move_right_end', self.target, function() self.target.movable.end_move(self.target, 'right') end)
-        beholder.observe('movable_move_up_end', self.target, function() self.target.movable.end_move(self.target, 'up') end)
-        beholder.observe('movable_move_down_end', self.target, function() self.target.movable.end_move(self.target, 'down') end)
+        beholder.observe('movable_move', self.target, function(direction, is_start)
+          if is_start == 'key_pressed' then
+            self.target.movable.start_move(self.target, direction)
+          else
+            self.target.movable.end_move(self.target, direction)
+          end
+        end)
       end)
     end,
   }
