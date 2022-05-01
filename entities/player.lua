@@ -11,8 +11,18 @@ Player = Class {
     local required_components = {'debug', 'position', 'velocity', 'acceleration', 'size'}
     local added_components = {}
 
-    self.acceleration = {x = 0, y = 0}
+    self.acceleration = vector(0,0)
+    self.direction = vector(0,0)
+    self.movement_speed = 250
+
     added_components[#added_components+1] = 'acceleration'
+
+    self.movement_state = {
+      up = { active = false, vector = vector(0, -1) },
+      down = { active = false, vector = vector(0, 1) },
+      left = { active = false, vector = vector(-1, 0) },
+      right = { active = false, vector = vector(1, 0) },
+    }
 
     for k,v in pairs(args) do
       added_components[#added_components+1] = k
@@ -46,18 +56,39 @@ Player = Class {
 
   register_events = function(self)
     beholder.group(self, function()
-      beholder.observe('player_move_left', function() self:move('left') end)
-      beholder.observe('player_move_right', function() self:move('right') end)
-      beholder.observe('player_move_up', function() self:move('up') end)
-      beholder.observe('player_move_down', function() self:move('down') end)
+      -- movement start
+      beholder.observe('player_move_left_start', function() self:start_move('left') end)
+      beholder.observe('player_move_right_start', function() self:start_move('right') end)
+      beholder.observe('player_move_up_start', function() self:start_move('up') end)
+      beholder.observe('player_move_down_start', function() self:start_move('down') end)
+      -- movement end
+      beholder.observe('player_move_left_end', function() self:end_move('left') end)
+      beholder.observe('player_move_right_end', function() self:end_move('right') end)
+      beholder.observe('player_move_up_end', function() self:end_move('up') end)
+      beholder.observe('player_move_down_end', function() self:end_move('down') end)
     end)
   end,
 
-  move = function(self, direction)
-    local movement_speed = 800
-    if (direction == 'left') then self.acceleration.x = self.acceleration.x - movement_speed end
-    if (direction == 'right') then self.acceleration.x = self.acceleration.x + movement_speed end
-    if (direction == 'up') then self.acceleration.y = self.acceleration.y - movement_speed end
-    if (direction == 'down') then self.acceleration.y = self.acceleration.y + movement_speed end
+  start_move = function(self, direction)
+    self.movement_state[direction].active = true
+    self:calculate_direction()
   end,
+  
+  end_move = function(self, direction)
+    self.movement_state[direction].active = false
+    self:calculate_direction()
+  end,
+
+  calculate_direction = function(self)
+    self.direction:set(0,0)
+
+    for _, movement_state in pairs(self.movement_state) do
+      if movement_state.active == true then
+        self.direction = self.direction + movement_state.vector
+      end 
+    end
+
+    self.direction:norm()
+    -- print('direction x: '..self.direction.x..' y: '..self.direction.y)
+  end
 }

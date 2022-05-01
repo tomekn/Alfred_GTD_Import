@@ -9,7 +9,7 @@ debug_entity_draw_system.draw = true
 
 function debug_entity_draw_system:process(e, _)
   love.graphics.setColor(255,0,0)
-  love.graphics.rectangle('line', e.position.x, e.position.y, e.size.width, e.size.height)
+  love.graphics.rectangle('line', e.position.x, e.position.y, e.size.x, e.size.y)
   love.graphics.setColor(255, 255, 255)
 end
 

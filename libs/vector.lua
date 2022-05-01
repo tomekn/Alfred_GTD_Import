@@ -1,98 +1,214 @@
---[[
-Copyright (c) 2010-2013 Matthias Richter
+local module = {
+  _version = "vector.lua v2019.14.12",
+  _description = "a simple vector library for Lua based on the PVector class from processing",
+  _url = "https://github.com/themousery/vector.lua",
+  _license = [[
+    Copyright (c) 2018 themousery
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
 
-Except as contained in this notice, the name(s) of the above copyright holders
-shall not be used in advertising or otherwise to promote the sale, use or
-other dealings in this Software without prior written authorization.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+  ]]
+}
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-]]--
+-- create the module
+local vector = {}
+vector.__index = vector
 
-local function include_helper(to, from, seen)
-	if from == nil then
-		return to
-	elseif type(from) ~= 'table' then
-		return from
-	elseif seen[from] then
-		return seen[from]
-	end
+-- get a random function from Love2d or base lua, in that order.
+local rand = math.random
+if love and love.math then rand = love.math.random end
 
-	seen[from] = to
-	for k,v in pairs(from) do
-		k = include_helper({}, k, seen) -- keys might also be tables
-		if to[k] == nil then
-			to[k] = include_helper({}, v, seen)
-		end
-	end
-	return to
+-- makes a new vector
+local function new(x,y)
+  return setmetatable({x=x or 0, y=y or 0}, vector)
 end
 
--- deeply copies `other' into `class'. keys in `other' that are already
--- defined in `class' are omitted
-local function include(class, other)
-	return include_helper(class, other, {})
+-- makes a new vector from an angle
+local function fromAngle(theta)
+  return new(math.cos(theta), -math.sin(theta))
 end
 
--- returns a deep copy of `other'
-local function clone(other)
-	return setmetatable(include({}, other), getmetatable(other))
+-- makes a vector with a random direction
+local function random()
+  return fromAngle(rand() * math.pi*2)
 end
 
-local function new(class)
-	-- mixins
-	class = class or {}  -- class can be nil
-	local inc = class.__includes or {}
-	if getmetatable(inc) then inc = {inc} end
-
-	for _, other in ipairs(inc) do
-		if type(other) == "string" then
-			other = _G[other]
-		end
-		include(class, other)
-	end
-
-	-- class implementation
-	class.__index = class
-	class.init    = class.init    or class[1] or function() end
-	class.include = class.include or include
-	class.clone   = class.clone   or clone
-
-	-- constructor call
-	return setmetatable(class, {__call = function(c, ...)
-		local o = setmetatable({}, c)
-		o:init(...)
-		return o
-	end})
+-- check if an object is a vector/unit
+local function isvector(t)
+  return getmetatable(t) == vector
 end
 
--- interface for cross class-system compatibility (see https://github.com/bartbes/Class-Commons).
-if class_commons ~= false and not common then
-	common = {}
-	function common.class(name, prototype, parent)
-		return new{__includes = {prototype, parent}}
-	end
-	function common.instance(class, ...)
-		return class(...)
-	end
+-- set the values of the vector to something new
+function vector:set(x,y)
+  if isvector(x) then self.x, self.y = x.x, x.y;return end
+  self.x, self.y = x or self.x, y or self.y
+  return self
+end
+
+-- replace the values of a vector with the values of another vector
+function vector:replace(v)
+  assert(isvector(v), "replace: wrong argument type: (expected <vector>, got "..type(v)..")")
+  self.x, self.y = v.x, v.y
+  return self
+end
+
+-- returns a copy of a vector
+function vector:clone()
+  return new(self.x, self.y)
+end
+
+-- get the magnitude of a vector
+function vector:getmag()
+  return math.sqrt(self.x^2 + self.y^2)
+end
+
+-- get the magnitude squared of a vector
+function vector:magSq()
+  return self.x^2 + self.y^2
+end
+
+-- set the magnitude of a vector
+function vector:setmag(mag)
+  self:norm()
+  local v = self * mag
+  self:replace(v)
+  return self
+end
+
+-- meta function to make vectors negative
+-- ex: (negative) -vector(5,6) is the same as vector(-5,-6)
+function vector.__unm(v)
+  return new(-v.x, -v.y)
+end
+
+-- meta function to add vectors together
+-- ex: (vector(5,6) + vector(6,5)) is the same as vector(11,11)
+function vector.__add(a,b)
+  assert(isvector(a) and isvector(b), "add: wrong argument types: (expected <vector> and <vector>)")
+  return new(a.x+b.x, a.y+b.y)
+end
+
+-- meta function to subtract vectors
+function vector.__sub(a,b)
+  assert(isvector(a) and isvector(b), "sub: wrong argument types: (expected <vector> and <vector>)")
+  return new(a.x-b.x, a.y-b.y)
+end
+
+-- meta function to multiply vectors
+function vector.__mul(a,b)
+  if type(a) == 'number' then 
+    return new(a * b.x, a * b.y)
+  elseif type(b) == 'number' then
+    return new(a.x * b, a.y * b)
+  else
+    assert(isvector(a) and isvector(b),  "mul: wrong argument types: (expected <vector> or <number>)")
+    return new(a.x*b.x, a.y*b.y)
+  end
+end
+
+-- meta function to divide vectors
+function vector.__div(a,b)
+  assert(isvector(a) and type(b) == "number", "div: wrong argument types (expected <vector> and <number>)")
+  return new(a.x/b, a.y/b)
+end
+
+-- meta function to check if vectors have the same values
+function vector.__eq(a,b)
+  assert(isvector(a) and isvector(b), "eq: wrong argument types (expected <vector> and <vector>)")
+  return a.x==b.x and a.y==b.y
+end
+
+-- meta function to change how vectors appear as string
+-- ex: print(vector(2,8)) - this prints '(2,8)'
+function vector:__tostring()
+  return "("..self.x..", "..self.y..")"
+end
+
+-- get the distance between two vectors
+function vector.dist(a,b)
+  assert(isvector(a) and isvector(b), "dist: wrong argument types (expected <vector> and <vector>)")
+  return math.sqrt((a.x-b.x)^2 + (a.y-b.y)^2)
+end
+
+-- return the dot product of the vector
+function vector:dot(v)
+  assert(isvector(v), "dot: wrong argument type (expected <vector>)")
+  return self.x * v.x + self.y * v.y
+end
+
+-- normalize the vector (give it a magnitude of 1)
+function vector:norm()
+  local m = self:getmag()
+  if m~=0 then
+    self:replace(self / m)
+  end
+  return self
+end
+
+-- limit the vector to a certain amount
+function vector:limit(max)
+  assert(type(max) == 'number', "limit: wrong argument type (expected <number>)")
+  local mSq = self:magSq()
+  if mSq > max^2 then
+    self:setmag(max)
+  end
+  return self
+end
+
+-- Clamp each axis between max and min's corresponding axis
+function vector:clamp(min, max)
+  assert(isvector(min) and isvector(max), "clamp: wrong argument type (expected <vector>) and <vector>")
+  local x = math.min( math.max( self.x, min.x ), max.x )
+  local y = math.min( math.max( self.y, min.y ), max.y )
+  self:set(x,y)
+  return self
+end
+
+-- get the heading (direction) of a vector
+function vector:heading()
+  return -math.atan2(self.y, self.x)
+end
+
+-- rotate a vector clockwise by a certain number of radians
+function vector:rotate(theta)
+  local s = math.sin(theta)
+  local c = math.cos(theta)
+  local v = new(
+                (c * self.x) + (s * self.y),
+                -(s * self.x) + (c * self.y))
+  self:replace(v)
+  return self
+end
+
+-- return x and y of vector as a regular array
+function vector:array()
+  return {self.x, self.y}
+end
+
+-- return x and y of vector, unpacked from table
+function vector:unpack()
+  return self.x, self.y
 end
 
 
--- the module
-return setmetatable({new = new, include = include, clone = clone},
-	{__call = function(_,...) return new(...) end})
+-- pack up and return module
+module.new = new
+module.random = random
+module.fromAngle = fromAngle
+module.isvector = isvector
+return setmetatable(module, {__call = function(_,...) return new(...) end})
