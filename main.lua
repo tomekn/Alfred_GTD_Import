@@ -23,7 +23,6 @@ function love.load()
         velocity = vector(0,0),
         size = vector(32, 32),
     })
-    player.register_movement_events(player)
 
     keymap:set_player(player)
     key_commands = keymap:commands()
