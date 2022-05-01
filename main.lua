@@ -14,14 +14,13 @@ _G.utils = require('utils')
 require('keymap')
 require('entities.player')
 local keymap = KeyMap()
-local key_commands = {}
 
 function love.load()
     local player = Player({
         debug = true,
         position = vector(64, 64),
         velocity = vector(0,0),
-        size = vector(32, 32),
+        size = vector(16, 16),
     })
 
     keymap:set_player(player)
@@ -42,9 +41,8 @@ function love.update(dt)
 end
 
 function love.draw()
-    local dt = love.timer.getDelta()
     if world then
-        world:update(dt, tiny.requireAll('draw'))
+        world:update(_, tiny.requireAll('draw'))
     end
 end
 

@@ -6,7 +6,6 @@ function movement_system:onAddToWorld()
 end
 
 function movement_system:process(e, dt)
-  print("e.direction.x: "..e.direction.x)
   e.position = e.position + (e.direction * e.movement_speed * dt)
 end
 

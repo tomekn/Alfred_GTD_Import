@@ -25,12 +25,13 @@ return {
       end
 
       self.target.direction:norm()
-      -- print('direction x: '..self.direction.x..' y: '..self.direction.y)
     end,
     register_movable_events = function(self)
       beholder.group(self.target, function()
-        beholder.observe('movable_move', self.target, function(direction, is_start)
-          if is_start == 'key_pressed' then
+        beholder.observe('movable_move', self.target, function(direction, key_status)
+          local is_moving = key_status == 'key_pressed'
+
+          if is_moving then
             self.target.movable.start_move(self.target, direction)
           else
             self.target.movable.end_move(self.target, direction)
