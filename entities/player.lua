@@ -8,7 +8,7 @@
 Player = Class {
   type = 'Player',
   required_components = {'debug', 'position', 'velocity', 'size'},
-  movement_speed = 250,
+  movement_speed = 128,
 }
 
 Player:include(require('traits.strong_components'))

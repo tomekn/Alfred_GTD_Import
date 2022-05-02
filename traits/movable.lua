@@ -15,6 +15,20 @@ return {
       self.movable.state[direction].active = false
       self.movable:calculate_direction()
     end,
+    force_move = function(self, direction)
+      self.movable.reset_state()
+      self.movable.state[direction].active = true
+      self.movable.calculate_direction()
+    end,
+    force_stop = function(self)
+      self.movable.reset_state()
+      self.movable.calculate_direction()
+    end,
+    reset_state = function(self)
+      for _, state in self.movable.state do
+        state.active = false
+      end
+    end,
     calculate_direction = function(self)
       self.target.direction:set(0,0)
 
@@ -24,7 +38,7 @@ return {
         end 
       end
 
-      self.target.direction:norm()
+      -- self.target.direction:norm()
     end,
     register_movable_events = function(self)
       beholder.group(self.target, function()

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+ <editorsettings>
+  <export target="test_map_2.lua" format="lua"/>
+ </editorsettings>
+ <tileset firstgid="1" name="scifitiles-sheet" tilewidth="32" tileheight="32" tilecount="84" columns="14">
+  <image source="scifitiles-sheet.png" width="448" height="192"/>
+ </tileset>
+ <layer id="1" name="Tile Layer 1" width="8" height="8">
+  <properties>
+   <property name="tileset" value="scifitiles-sheet"/>
+  </properties>
+  <data encoding="csv">
+17,17,17,17,17,17,17,17,
+18,18,18,18,18,18,18,18,
+18,18,6,7,7,8,18,18,
+18,18,20,21,21,23,7,7,
+18,18,20,21,21,9,35,35,
+18,18,34,35,35,36,18,18,
+18,18,18,18,18,18,18,18,
+18,18,18,18,18,18,18,18
+</data>
+ </layer>
+</map>
