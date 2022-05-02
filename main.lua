@@ -58,6 +58,7 @@ function love.load()
 end
 
 function love.update(dt)
+    print(love.timer.getFPS())
     if world then
         world:update(dt, tiny.rejectAll('draw'))
     end
@@ -71,7 +72,6 @@ function love.draw()
     if world then
         world:update(_, tiny.requireAll('draw'))
     end
-
     push:finish()
 end
 

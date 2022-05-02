@@ -43,7 +43,7 @@ function Map:tiles()
       },
       quad = self.map_quads[tile_id]
     }
-    print('quad x: '..tiles[i].position.x..' y: '..tiles[i].position.y)
+    -- print('quad x: '..tiles[i].position.x..' y: '..tiles[i].position.y)
   end
   return tiles
 end
